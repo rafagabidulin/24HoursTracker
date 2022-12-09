@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  height: 48px;
+  width: 100%;
+  background-color: rgb(80, 80, 225);
+}
+
+.header__logo {
+  padding-left: 20px;
+  color: white;
+}
