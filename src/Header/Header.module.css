@@ -4,7 +4,7 @@
   position: fixed;
   height: 48px;
   width: 100%;
-  background-color: rgb(80, 80, 225);
+  background-color: rgba(54, 162, 235, 1);
 }
 
 .header__logo {
