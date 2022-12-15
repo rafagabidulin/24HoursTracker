@@ -1,7 +1,7 @@
 import React from 'react';
-import { Header } from './Header/Header';
-import { DoughnutChart } from './DoughnutChart/DoughnutChart';
-import { TodoList } from './TodoList/TodoList';
+import { Header } from './components/Header/Header';
+import { DoughnutChart } from './components/DoughnutChart/DoughnutChart';
+import { TodoList } from './components/TodoList/TodoList';
 
 export const data = {
   labels: ['Sleep', 'Work', 'Dinner', 'Study', 'Reading', 'Free'],
