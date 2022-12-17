@@ -9,16 +9,19 @@ export const fetchTodos = createAsyncThunk('todo/fetchTodos', async (_, thunkAPI
     return thunkAPI.rejectWithValue(LoadingStatuses.earlyAdded);
   }
 
-  const response = await axios.get(`https://localhost:3001/todos`);
+  const response = await axios.get(`http://localhost:3001/todos`);
 
   return response.data;
 });
 
-interface TodoState {
+export interface TodoState {
   userId: number;
   id: number;
   title: string;
+  description: string;
+  duration: number;
   inProgress: boolean;
+  completed: boolean;
 }
 
 const todoEntityAdapter = createEntityAdapter<TodoState>();
