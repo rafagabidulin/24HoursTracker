@@ -1,4 +1,7 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store';
+
 import { Header } from './components/Header/Header';
 import { DoughnutChart } from './components/DoughnutChart/DoughnutChart';
 import { TodoList } from './components/TodoList/TodoList';
@@ -32,8 +35,10 @@ export const data = {
 
 export const App = () => (
   <div>
-    <Header />
-    <DoughnutChart data={data} />
-    <TodoList />
+    <Provider store={store}>
+      <Header />
+      <DoughnutChart data={data} />
+      <TodoList />
+    </Provider>
   </div>
 );
