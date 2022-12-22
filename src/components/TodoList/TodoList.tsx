@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, useFormik } from 'formik';
 import type { FormikProps } from 'formik';
 import * as yup from 'yup';
 
 import { Button } from '../Button/Button';
 
-import { TodoState, fetchTodos } from '../../store/todo';
+import { TodoState, fetchTodos, addTodo } from '../../store/todo';
 import {
   selectTodoInProgress,
   selectCompletedTodo,
@@ -14,6 +14,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 
 import styles from './TodoList.module.css';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 interface FormikValuesProps {
   userId: number;
@@ -27,7 +28,7 @@ interface FormikValuesProps {
 
 const initialValues: TodoState = {
   userId: 1,
-  id: 1,
+  id: Date.now() + Math.random(),
   title: '',
   description: '',
   duration: 0,
@@ -36,6 +37,8 @@ const initialValues: TodoState = {
 };
 
 export const TodoList = () => {
+  const [newTodo, setNewTodo] = useState(initialValues);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -46,6 +49,27 @@ export const TodoList = () => {
   const completedTodo = useAppSelector((state) => selectCompletedTodo(state));
   const incompletedTodo = useAppSelector((state) => selectIncompletedTodo(state));
 
+  const onChangeTodoTitle = ({ target }: any) => {
+    if (target.value === '') return;
+    setNewTodo({
+      ...newTodo,
+      title: target.value
+    });
+  };
+
+  const onChangeTodoDescription = ({ target }: any) => {
+    if (target.value === '') return;
+    setNewTodo({
+      ...newTodo,
+      description: target.value
+    });
+  };
+
+  const onSubmit = () => {
+    dispatch(addTodo(newTodo));
+    setNewTodo(initialValues);
+  };
+
   const validationSchema = yup.object().shape({
     title: yup.string().typeError('Должно быть строкой').required('Обязательно')
   });
@@ -55,9 +79,7 @@ export const TodoList = () => {
     validationSchema,
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit: (values) => {
-      console.log(values);
-    }
+    onSubmit
   });
 
   return (
@@ -73,57 +95,46 @@ export const TodoList = () => {
           <div className={styles.form_container}>
             <p>
               <input
-                className={styles.form_input}
-                placeholder='Введите задачу'
+                className={styles.form_input_title}
+                placeholder='Введите название задачи'
                 type='text'
                 name='title'
-                onChange={formik.handleChange}
+                onChange={(event) => onChangeTodoTitle(event)}
                 onBlur={formik.handleBlur}
-                value={formik.values.title}
               />
             </p>
             {formik.touched.title && formik.errors.title && (
               <p className='error'>{formik.errors.title}</p>
             )}
 
-            <Button color='blue' type='submit' disabled={formik.isSubmitting}>
+            <p>
+              <input
+                className={styles.form_input_description}
+                placeholder='Введите задачу'
+                type='text'
+                name='description'
+                onChange={(event) => onChangeTodoDescription(event)}
+                onBlur={formik.handleBlur}
+              />
+            </p>
+            {formik.touched.description && formik.errors.description && (
+              <p className='error'>{formik.errors.description}</p>
+            )}
+
+            <Button color='blue' type='submit' onClick={onSubmit}>
               Сохранить
             </Button>
           </div>
         </Formik>
       </div>
       {completedTodo.map((todo) => (
-        <div>
-          <div>{todo?.title}</div>
-          <div>{todo?.description}</div>
-          <div>Duration: {todo?.duration} hours</div>
-          <div>
-            <Button color='orange'>EDIT</Button>
-            <Button color='red'>DELETE</Button>
-          </div>
-        </div>
+        <TodoItem todo={todo} key={todo?.id} />
       ))}
       {todoInProgress.map((todo) => (
-        <div>
-          <div>{todo?.title}</div>
-          <div>{todo?.description}</div>
-          <div>Duration: {todo?.duration} hours</div>
-          <div>
-            <Button color='orange'>EDIT</Button>
-            <Button color='red'>DELETE</Button>
-          </div>
-        </div>
+        <TodoItem todo={todo} key={todo?.id} />
       ))}
       {incompletedTodo.map((todo) => (
-        <div>
-          <div>{todo?.title}</div>
-          <div>{todo?.description}</div>
-          <div>Duration: {todo?.duration} hours</div>
-          <div>
-            <Button color='orange'>EDIT</Button>
-            <Button color='red'>DELETE</Button>
-          </div>
-        </div>
+        <TodoItem todo={todo} key={todo?.id} />
       ))}
     </div>
   );
