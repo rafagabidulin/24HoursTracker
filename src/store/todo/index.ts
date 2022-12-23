@@ -12,6 +12,8 @@ export interface TodoState {
   duration: number;
   inProgress: boolean;
   completed: boolean;
+  backgroundColor: string;
+  borderColor: string;
 }
 
 export const fetchTodos = createAsyncThunk('todo/fetchTodos', async (_, thunkAPI) => {
