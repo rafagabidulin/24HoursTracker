@@ -5,23 +5,12 @@ import * as yup from 'yup';
 
 import { Button } from '../Button/Button';
 
-import { TodoState, fetchTodos, addTodo } from '../../store/todo';
-
+import { fetchTodos, addTodo } from '../../store/todo';
 import { useAppDispatch } from '../../hooks/hooks';
+import { BACKGROUND_COLORS, BORDER_COLORS } from '../../constants/colors';
+import TodoState from '../../types';
 
 import styles from './TodoPanel.module.css';
-
-interface FormikValuesProps {
-  userId: number;
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  inProgress: boolean;
-  completed: boolean;
-  backgroundColor: string;
-  borderColor: string;
-}
 
 const initialValues: TodoState = {
   userId: 0,
@@ -35,24 +24,6 @@ const initialValues: TodoState = {
   borderColor: ''
 };
 
-const BACKGROUND_COLORS = [
-  'rgba(255, 99, 132, 0.2)',
-  'rgba(54, 162, 235, 0.2)',
-  'rgba(255, 206, 86, 0.2)',
-  'rgba(75, 192, 192, 0.2)',
-  'rgba(153, 102, 255, 0.2)',
-  'rgba(255, 159, 64, 0.2)'
-];
-
-const BORDER_COLORS = [
-  'rgba(255, 99, 132, 1)',
-  'rgba(54, 162, 235, 1)',
-  'rgba(255, 206, 86, 1)',
-  'rgba(75, 192, 192, 1)',
-  'rgba(153, 102, 255, 1)',
-  'rgba(255, 159, 64, 1)'
-];
-
 export const TodoPanel = () => {
   const [newTodo, setNewTodo] = useState(initialValues);
 
@@ -62,28 +33,28 @@ export const TodoPanel = () => {
     dispatch(fetchTodos());
   }, []);
 
-  const onChangeTodoTitle = ({ target }: any) => {
-    if (target.value === '') return;
+  const onChangeTodoTitle = ({ target }: React.FormEvent<HTMLInputElement>) => {
+    if ((target as HTMLInputElement).value === '') return;
     setNewTodo({
       ...newTodo,
-      title: target.value
+      title: (target as HTMLInputElement).value
     });
   };
 
-  const onChangeTodoDescription = ({ target }: any) => {
-    if (target.value === '') return;
+  const onChangeTodoDescription = ({ target }: React.FormEvent<HTMLInputElement>) => {
+    if ((target as HTMLInputElement).value === '') return;
     setNewTodo({
       ...newTodo,
-      description: target.value
+      description: (target as HTMLInputElement).value
     });
   };
 
-  const onChangeTodoDuration = ({ target }: any) => {
-    if (target.value === '') return;
+  const onChangeTodoDuration = ({ target }: React.FormEvent<HTMLInputElement>) => {
+    if ((target as HTMLInputElement).value === '') return;
     const index = Math.floor(Math.random() * BACKGROUND_COLORS.length);
     setNewTodo({
       ...newTodo,
-      duration: target.value,
+      duration: Number((target as HTMLInputElement).value),
       backgroundColor: BACKGROUND_COLORS[index],
       borderColor: BORDER_COLORS[index]
     });
@@ -98,13 +69,14 @@ export const TodoPanel = () => {
     title: yup.string().typeError('Должно быть строкой').required('Обязательно')
   });
 
-  const formik: FormikProps<FormikValuesProps> = useFormik<FormikValuesProps>({
+  const formik: FormikProps<TodoState> = useFormik<TodoState>({
     initialValues,
     validationSchema,
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit
   });
+
   return (
     <div className={styles.todo_panel_container}>
       <div>
