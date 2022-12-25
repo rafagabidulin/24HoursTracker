@@ -8,8 +8,6 @@ interface TodoState {
   completed: boolean;
   backgroundColor: string;
   borderColor: string;
-  todoIdForEdit?: number;
-  mode?: string;
 }
 
 export default TodoState;
