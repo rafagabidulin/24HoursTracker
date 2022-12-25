@@ -6,6 +6,9 @@ export const selectTodoIds = (state: RootState) => selectTodoModuleState(state).
 
 export const selectTodoEntities = (state: RootState) => selectTodoModuleState(state).entities;
 
+export const selectTodoById = (state: RootState, { todoId }: { todoId: number }) =>
+  selectTodoEntities(state)[todoId];
+
 export const selectTodoArrayEntities = (state: RootState) =>
   Object.values(selectTodoEntities(state));
 
