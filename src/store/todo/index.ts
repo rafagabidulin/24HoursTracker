@@ -1,29 +1,24 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import LoadingStatuses from '../../constants/loadingStatuses';
 import { selectTodoIds } from './selectors';
-
-export interface TodoState {
-  userId: number;
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  inProgress: boolean;
-  completed: boolean;
-  backgroundColor: string;
-  borderColor: string;
-}
+import TodoState from '../../types';
 
 export const fetchTodos = createAsyncThunk('todo/fetchTodos', async (_, thunkAPI) => {
   if (selectTodoIds(thunkAPI.getState() as RootState).length > 0) {
     return thunkAPI.rejectWithValue(LoadingStatuses.earlyAdded);
   }
 
-  const response = await axios.get(`http://localhost:3001/todos`);
+  try {
+    const response = await axios.get(`http://localhost:3001/todos`);
 
-  return response.data;
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError | Error;
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
 });
 
 export const addTodo = createAsyncThunk('todo/addTodo', async (data: TodoState) => {
@@ -33,14 +28,30 @@ export const addTodo = createAsyncThunk('todo/addTodo', async (data: TodoState) 
     });
 
     return response.data;
-  } catch (error: any) {
-    console.error(error.response.data);
+  } catch (err) {
+    const error = err as AxiosError | Error;
+    // eslint-disable-next-line no-console
+    console.error(error);
   }
 });
 
 export const deleteTodo = createAsyncThunk('todo/deleteTodo', async (todoId: number) => {
   await axios.delete(`http://localhost:3001/todos/${todoId}`);
   return todoId;
+});
+
+export const updateTodo = createAsyncThunk('todo/updateTodo', async (data: TodoState) => {
+  try {
+    const response = await axios.put(`http://localhost:3001/todos/${data.id}`, {
+      ...data
+    });
+
+    return response.data;
+  } catch (err) {
+    const error = err as AxiosError | Error;
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
 });
 
 const todoEntityAdapter = createEntityAdapter<TodoState>();
@@ -83,6 +94,17 @@ export const todoSlice = createSlice({
         state.status = LoadingStatuses.success;
       })
       .addCase(deleteTodo.rejected, (state, { payload }) => {
+        state.status =
+          payload === LoadingStatuses.earlyAdded ? LoadingStatuses.success : LoadingStatuses.failed;
+      })
+      .addCase(updateTodo.pending, (state) => {
+        state.status = LoadingStatuses.inProgress;
+      })
+      .addCase(updateTodo.fulfilled, (state, { payload }) => {
+        todoEntityAdapter.setOne(state, payload);
+        state.status = LoadingStatuses.success;
+      })
+      .addCase(updateTodo.rejected, (state, { payload }) => {
         state.status =
           payload === LoadingStatuses.earlyAdded ? LoadingStatuses.success : LoadingStatuses.failed;
       })
