@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from '../Button/Button';
-import { deleteTodo, TodoState } from '../../store/todo';
+import { deleteTodo } from '../../store/todo';
 import { useAppDispatch } from '../../hooks/hooks';
+import TodoState from '../../types';
 
 import styles from './TodoItem.module.css';
 
