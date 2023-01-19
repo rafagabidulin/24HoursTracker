@@ -11,3 +11,4 @@ This app will be a 24 hours pie colored chart with a clock face in it. The clock
 - Formik
 - json-server
 - Webpack
+- Eslint
